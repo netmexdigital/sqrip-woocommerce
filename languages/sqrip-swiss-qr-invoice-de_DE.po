@@ -2122,3 +2122,39 @@ msgstr "Ihre IBANs"
 
 msgid "List the IBANs of your own bank accounts, one per line, exactly as they appear on the notification (e.g. CH18 0076 1646 1682 4200 3). If your bank sends credit notifications for several accounts to your sqrip address, only payments on these IBANs are then reconciled; notifications for other accounts are ignored. Enter the IBAN, not the bare account number — a plain account number is not matched. Leave empty to reconcile every incoming notification (the default)."
 msgstr "Tragen Sie die IBANs Ihrer eigenen Bankkonten ein, eine pro Zeile, genau wie auf der Anzeige (z. B. CH18 0076 1646 1682 4200 3). Falls Ihre Bank Gutschriftsanzeigen für mehrere Konten an Ihre sqrip-Adresse schickt, werden nur Zahlungen auf diese IBANs abgeglichen; Anzeigen anderer Konten werden ignoriert. Tragen Sie die IBAN ein, nicht die blosse Kontonummer — eine reine Kontonummer wird nicht erkannt. Leer lassen, um jede eingehende Anzeige abzugleichen (Standard)."
+
+msgid "Auto-released (order number + exact amount)."
+msgstr "Automatisch freigegeben (Bestellnummer + exakter Betrag)."
+
+msgid "Automatically released: payment matched by order number and exact amount (no QR/SCOR reference). Payer: %1$s, amount %2$s."
+msgstr "Automatisch freigegeben: Zahlung über Bestellnummer und exakten Betrag zugeordnet (ohne QR-/SCOR-Referenz). Zahler: %1$s, Betrag %2$s."
+
+msgid "sqrip #%s: automatically booked"
+msgstr "sqrip #%s: automatisch gebucht"
+
+msgid "Order %1$s was marked as paid automatically: a reference-less payment of %2$s from \"%3$s\" was matched by the order number, and the amount is exactly right."
+msgstr "Bestellung %1$s wurde automatisch als bezahlt markiert: eine referenzlose Zahlung über %2$s von „%3$s\" wurde über die Bestellnummer zugeordnet, und der Betrag stimmt exakt."
+
+msgid "Order %1$s was marked as paid automatically: a reference-less payment of %2$s was matched by the order number, and the amount is exactly right."
+msgstr "Bestellung %1$s wurde automatisch als bezahlt markiert: eine referenzlose Zahlung über %2$s wurde über die Bestellnummer zugeordnet, und der Betrag stimmt exakt."
+
+msgid "The order is now on \"%s\". If this was not your customer's payment, open the order and reverse it."
+msgstr "Die Bestellung steht jetzt auf „%s\". War das nicht die Zahlung Ihres Kunden, öffnen Sie die Bestellung und machen Sie die Buchung rückgängig."
+
+msgid "Auto-release exact reference-less matches"
+msgstr "Referenzlose Treffer bei exaktem Betrag automatisch freigeben"
+
+msgid "Book automatically when a reference-less transfer is matched by order number and the amount is exactly right"
+msgstr "Automatisch buchen, wenn eine referenzlose Überweisung über die Bestellnummer getroffen wird und der Betrag exakt stimmt"
+
+msgid "Off by default. When on, sqrip books exactly the one unambiguous case itself — a payment without a QR/SCOR reference, matched to a single open order by its order number, with the received amount and currency exactly equal to the order total — instead of waiting for your confirmation. Everything else (wrong amount, unclear match, several possible orders) still waits for you. Risk: a stranger's payment that happens to carry your order number and the exact same amount would be booked — that is why this stays off unless you switch it on. You can always reverse a booking on the order."
+msgstr "Standardmässig aus. Wenn aktiviert, bucht sqrip genau den einen eindeutigen Fall selbst — eine Zahlung ohne QR-/SCOR-Referenz, über die Bestellnummer einer einzelnen offenen Bestellung zugeordnet, mit eingegangenem Betrag und Währung exakt gleich dem Bestelltotal — statt auf Ihre Bestätigung zu warten. Alles andere (abweichender Betrag, unklare Zuordnung, mehrere mögliche Bestellungen) wartet weiterhin auf Sie. Risiko: eine fremde Zahlung, die zufällig Ihre Bestellnummer und exakt denselben Betrag trägt, würde gebucht — deshalb bleibt dies aus, bis Sie es einschalten. Eine Buchung können Sie an der Bestellung jederzeit rückgängig machen."
+
+msgid "Notify me about auto-releases"
+msgstr "Über automatische Buchungen benachrichtigen"
+
+msgid "Send me an info e-mail whenever a payment is booked automatically"
+msgstr "Bei jeder automatischen Buchung eine Info-E-Mail an mich senden"
+
+msgid "Only applies when auto-release is on. Leave on to get an e-mail naming each order that was booked automatically; turn off to book silently."
+msgstr "Gilt nur bei aktivierter Auto-Freigabe. Eingeschaltet lassen, um zu jeder automatisch gebuchten Bestellung eine E-Mail zu erhalten; ausschalten, um still zu buchen."

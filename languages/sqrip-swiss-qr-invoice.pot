@@ -2344,3 +2344,39 @@ msgstr ""
 
 msgid "List the IBANs of your own bank accounts, one per line, exactly as they appear on the notification (e.g. CH18 0076 1646 1682 4200 3). If your bank sends credit notifications for several accounts to your sqrip address, only payments on these IBANs are then reconciled; notifications for other accounts are ignored. Enter the IBAN, not the bare account number — a plain account number is not matched. Leave empty to reconcile every incoming notification (the default)."
 msgstr ""
+
+msgid "Auto-released (order number + exact amount)."
+msgstr ""
+
+msgid "Automatically released: payment matched by order number and exact amount (no QR/SCOR reference). Payer: %1$s, amount %2$s."
+msgstr ""
+
+msgid "sqrip #%s: automatically booked"
+msgstr ""
+
+msgid "Order %1$s was marked as paid automatically: a reference-less payment of %2$s from \"%3$s\" was matched by the order number, and the amount is exactly right."
+msgstr ""
+
+msgid "Order %1$s was marked as paid automatically: a reference-less payment of %2$s was matched by the order number, and the amount is exactly right."
+msgstr ""
+
+msgid "The order is now on \"%s\". If this was not your customer's payment, open the order and reverse it."
+msgstr ""
+
+msgid "Auto-release exact reference-less matches"
+msgstr ""
+
+msgid "Book automatically when a reference-less transfer is matched by order number and the amount is exactly right"
+msgstr ""
+
+msgid "Off by default. When on, sqrip books exactly the one unambiguous case itself — a payment without a QR/SCOR reference, matched to a single open order by its order number, with the received amount and currency exactly equal to the order total — instead of waiting for your confirmation. Everything else (wrong amount, unclear match, several possible orders) still waits for you. Risk: a stranger's payment that happens to carry your order number and the exact same amount would be booked — that is why this stays off unless you switch it on. You can always reverse a booking on the order."
+msgstr ""
+
+msgid "Notify me about auto-releases"
+msgstr ""
+
+msgid "Send me an info e-mail whenever a payment is booked automatically"
+msgstr ""
+
+msgid "Only applies when auto-release is on. Leave on to get an e-mail naming each order that was booked automatically; turn off to book silently."
+msgstr ""

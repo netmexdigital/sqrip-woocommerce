@@ -998,6 +998,22 @@ class WC_Sqrip_Payment_Gateway extends WC_Payment_Gateway
                 'desc_tip' => true,
                 'class' => 'comparison-tab sqrip-avis-detail'
             ),
+            'avis_auto_release' => array(
+                'title' => __('Auto-release exact reference-less matches', 'sqrip-swiss-qr-invoice'),
+                'type' => 'checkbox',
+                'label' => __('Book automatically when a reference-less transfer is matched by order number and the amount is exactly right', 'sqrip-swiss-qr-invoice'),
+                'default' => 'no',
+                'description' => __('Off by default. When on, sqrip books exactly the one unambiguous case itself — a payment without a QR/SCOR reference, matched to a single open order by its order number, with the received amount and currency exactly equal to the order total — instead of waiting for your confirmation. Everything else (wrong amount, unclear match, several possible orders) still waits for you. Risk: a stranger\'s payment that happens to carry your order number and the exact same amount would be booked — that is why this stays off unless you switch it on. You can always reverse a booking on the order.', 'sqrip-swiss-qr-invoice'),
+                'class' => 'comparison-tab sqrip-avis-detail'
+            ),
+            'avis_auto_release_mail' => array(
+                'title' => __('Notify me about auto-releases', 'sqrip-swiss-qr-invoice'),
+                'type' => 'checkbox',
+                'label' => __('Send me an info e-mail whenever a payment is booked automatically', 'sqrip-swiss-qr-invoice'),
+                'default' => 'yes',
+                'description' => __('Only applies when auto-release is on. Leave on to get an e-mail naming each order that was booked automatically; turn off to book silently.', 'sqrip-swiss-qr-invoice'),
+                'class' => 'comparison-tab sqrip-avis-detail'
+            ),
             'avis_extra_statuses' => array(
                 'title' => __('Also reconcile these order statuses', 'sqrip-swiss-qr-invoice'),
                 'type' => 'multiselect',

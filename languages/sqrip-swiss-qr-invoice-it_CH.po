@@ -2114,3 +2114,39 @@ msgstr "I suoi IBAN"
 
 msgid "List the IBANs of your own bank accounts, one per line, exactly as they appear on the notification (e.g. CH18 0076 1646 1682 4200 3). If your bank sends credit notifications for several accounts to your sqrip address, only payments on these IBANs are then reconciled; notifications for other accounts are ignored. Enter the IBAN, not the bare account number — a plain account number is not matched. Leave empty to reconcile every incoming notification (the default)."
 msgstr "Inserisca gli IBAN dei suoi conti bancari, uno per riga, esattamente come sull'avviso (ad es. CH18 0076 1646 1682 4200 3). Se la sua banca invia avvisi di accredito per più conti al suo indirizzo sqrip, vengono riconciliati solo i pagamenti su questi IBAN; gli avvisi di altri conti vengono ignorati. Inserisca l'IBAN, non il semplice numero di conto — un numero di conto da solo non viene riconosciuto. Lasci vuoto per riconciliare ogni avviso in arrivo (impostazione predefinita)."
+
+msgid "Auto-released (order number + exact amount)."
+msgstr "Rilasciato automaticamente (numero d'ordine + importo esatto)."
+
+msgid "Automatically released: payment matched by order number and exact amount (no QR/SCOR reference). Payer: %1$s, amount %2$s."
+msgstr "Rilasciato automaticamente: pagamento abbinato tramite numero d'ordine e importo esatto (senza referenza QR/SCOR). Pagatore: %1$s, importo %2$s."
+
+msgid "sqrip #%s: automatically booked"
+msgstr "sqrip #%s: contabilizzato automaticamente"
+
+msgid "Order %1$s was marked as paid automatically: a reference-less payment of %2$s from \"%3$s\" was matched by the order number, and the amount is exactly right."
+msgstr "L'ordine %1$s è stato contrassegnato automaticamente come pagato: un pagamento senza referenza di %2$s da „%3$s\" è stato abbinato tramite il numero d'ordine e l'importo corrisponde esattamente."
+
+msgid "Order %1$s was marked as paid automatically: a reference-less payment of %2$s was matched by the order number, and the amount is exactly right."
+msgstr "L'ordine %1$s è stato contrassegnato automaticamente come pagato: un pagamento senza referenza di %2$s è stato abbinato tramite il numero d'ordine e l'importo corrisponde esattamente."
+
+msgid "The order is now on \"%s\". If this was not your customer's payment, open the order and reverse it."
+msgstr "L'ordine ora è su „%s\". Se non era il pagamento del suo cliente, apra l'ordine e annulli la registrazione."
+
+msgid "Auto-release exact reference-less matches"
+msgstr "Rilascia automaticamente le corrispondenze senza referenza con importo esatto"
+
+msgid "Book automatically when a reference-less transfer is matched by order number and the amount is exactly right"
+msgstr "Contabilizza automaticamente quando un bonifico senza referenza viene abbinato tramite il numero d'ordine e l'importo corrisponde esattamente"
+
+msgid "Off by default. When on, sqrip books exactly the one unambiguous case itself — a payment without a QR/SCOR reference, matched to a single open order by its order number, with the received amount and currency exactly equal to the order total — instead of waiting for your confirmation. Everything else (wrong amount, unclear match, several possible orders) still waits for you. Risk: a stranger's payment that happens to carry your order number and the exact same amount would be booked — that is why this stays off unless you switch it on. You can always reverse a booking on the order."
+msgstr "Disattivato per impostazione predefinita. Se attivo, sqrip contabilizza da sé l'unico caso inequivocabile — un pagamento senza referenza QR/SCOR, abbinato a un singolo ordine aperto tramite il suo numero d'ordine, con importo ricevuto e valuta esattamente uguali al totale dell'ordine — invece di attendere la sua conferma. Tutto il resto (importo diverso, abbinamento incerto, più ordini possibili) attende comunque lei. Rischio: un pagamento estraneo che per caso riporta il suo numero d'ordine e lo stesso importo esatto verrebbe contabilizzato — per questo resta disattivato finché non lo attiva. Può sempre annullare una registrazione sull'ordine."
+
+msgid "Notify me about auto-releases"
+msgstr "Avvisami dei rilasci automatici"
+
+msgid "Send me an info e-mail whenever a payment is booked automatically"
+msgstr "Inviami un'e-mail informativa a ogni pagamento contabilizzato automaticamente"
+
+msgid "Only applies when auto-release is on. Leave on to get an e-mail naming each order that was booked automatically; turn off to book silently."
+msgstr "Vale solo con il rilascio automatico attivo. Lasci attivo per ricevere un'e-mail con ogni ordine contabilizzato automaticamente; disattivi per contabilizzare in silenzio."

@@ -702,6 +702,20 @@ class Sqrip_Avis
         $currency    = $info ? (string) $info['currency'] : (isset($w['currency']) ? (string) $w['currency'] : '');
         $expected    = $info ? $info['expected'] : (isset($w['expected']) ? $w['expected'] : null);
 
+        // Opt-in auto-release: the one unambiguous case — a reference-less order-number
+        // hit with an exactly matching amount — is booked automatically instead of
+        // waiting for the ✓ click. Everything else falls through to the manual path.
+        if ($type === 'no_reference_key' && $order && self::try_auto_release($order, $w, $expected, $currency)) {
+            self::log_add(
+                $ref_norm, $ref_display,
+                isset($w['received']) ? (float) $w['received'] : null,
+                $currency, null, array(),
+                __('Auto-released (order number + exact amount).', 'sqrip-swiss-qr-invoice')
+            );
+
+            return;
+        }
+
         // Order note (plain) + a detailed e-mail (HTML with the order link).
         if ($order) {
             self::add_order_note($order, self::warning_message($w));
@@ -767,6 +781,114 @@ class Sqrip_Avis
         } else {
             $order->save();
         }
+    }
+
+    /**
+     * Mark one order as paid exactly the way the manual ✓ does: add the note, then move
+     * it to the shop's own "completed" status (or just save when none is configured).
+     * Same routine for both, so status, hooks and stock stay consistent.
+     *
+     * @param \WC_Order $order
+     * @param string    $note
+     * @return void
+     */
+    private static function mark_order_paid($order, $note)
+    {
+        self::add_order_note($order, $note);
+
+        $status_completed = sqrip_get_plugin_option('status_completed');
+
+        if ($status_completed) {
+            $order->update_status($status_completed, '');
+        } else {
+            $order->save();
+        }
+    }
+
+    /**
+     * @return bool The shop opted into auto-releasing reference-less exact matches.
+     */
+    private static function auto_release_enabled()
+    {
+        return sqrip_get_plugin_option('avis_auto_release') === 'yes';
+    }
+
+    /**
+     * @return bool Send an info e-mail when an order is auto-released (default: yes).
+     */
+    private static function auto_release_notify()
+    {
+        return sqrip_get_plugin_option('avis_auto_release_mail') !== 'no';
+    }
+
+    /**
+     * The one case that may book itself: a reference-less bank transfer, matched to a
+     * single open order by its order number, with the received amount and currency exactly
+     * equal to that order's total. Every condition must hold — otherwise this returns false
+     * and the caller keeps the manual ✓/✗ path. Books via the same routine as the ✓ click.
+     *
+     * @param \WC_Order  $order    The single order the order_number resolved to.
+     * @param array      $w        The no_reference_key warning.
+     * @param float|null $expected The order's outstanding amount, as reconciled.
+     * @param string     $currency The order's currency, as reconciled.
+     * @return bool True when the order was booked here.
+     */
+    private static function try_auto_release($order, array $w, $expected, $currency)
+    {
+        if (!self::auto_release_enabled()) {
+            return false;
+        }
+
+        // Amount must be exactly comparable: both present and equal, same currency.
+        if (!isset($w['received']) || !isset($w['expected'])) {
+            return false;
+        }
+
+        $received = round((float) $w['received'], 2);
+        $exp_w    = round((float) $w['expected'], 2);
+        $w_ccy    = isset($w['currency']) ? (string) $w['currency'] : '';
+
+        if ($received !== $exp_w || $w_ccy === '' || $currency === '' || strcasecmp($w_ccy, $currency) !== 0) {
+            return false;
+        }
+
+        // Idempotent: never re-book an order that is already paid/completed.
+        if ($order->is_paid()) {
+            return false;
+        }
+
+        // The resolved open order must match on currency AND amount (its total and the
+        // reconciled outstanding both equal the received amount).
+        if (strcasecmp((string) $order->get_currency(), $w_ccy) !== 0) {
+            return false;
+        }
+
+        if (round((float) $order->get_total(), 2) !== $received) {
+            return false;
+        }
+
+        if ($expected !== null && round((float) $expected, 2) !== $received) {
+            return false;
+        }
+
+        // (Exactly one order is guaranteed: order_number resolves to a single order.)
+        $sender = isset($w['sender']) ? trim((string) $w['sender']) : '';
+        $amount = self::amount_str($currency, $received);
+
+        $note = sprintf(
+            /* translators: 1: payer name, 2: amount incl. currency */
+            __('Automatically released: payment matched by order number and exact amount (no QR/SCOR reference). Payer: %1$s, amount %2$s.', 'sqrip-swiss-qr-invoice'),
+            $sender !== '' ? $sender : '—',
+            $amount !== '' ? $amount : '—'
+        );
+
+        self::mark_order_paid($order, $note);
+
+        if (self::auto_release_notify()) {
+            self::send_auto_release_email($order, $w, $currency);
+        }
+
+        return true;
     }
 
     /**
@@ -1514,6 +1636,46 @@ class Sqrip_Avis
     }
 
     /**
+     * Info e-mail after an auto-release: tells the admin which order was booked
+     * automatically, so the automatic booking stays traceable. Not a call to act.
+     *
+     * @param \WC_Order $order
+     * @param array     $w
+     * @param string    $currency
+     * @return void
+     */
+    private static function send_auto_release_email($order, array $w, $currency)
+    {
+        $received = self::amount_str($currency, isset($w['received']) ? $w['received'] : null);
+        $sender   = isset($w['sender']) ? trim((string) $w['sender']) : '';
+
+        $subject = sprintf(
+            /* translators: %s: order number */
+            __('sqrip #%s: automatically booked', 'sqrip-swiss-qr-invoice'), $order->get_order_number());
+
+        $intro = ($sender !== '')
+            ? sprintf(
+                /* translators: 1: order link, 2: amount, 3: payer */
+                esc_html__('Order %1$s was marked as paid automatically: a reference-less payment of %2$s from "%3$s" was matched by the order number, and the amount is exactly right.', 'sqrip-swiss-qr-invoice'),
+                self::order_link_html($order), esc_html($received !== '' ? $received : '&mdash;'), esc_html($sender))
+            : sprintf(
+                /* translators: 1: order link, 2: amount */
+                esc_html__('Order %1$s was marked as paid automatically: a reference-less payment of %2$s was matched by the order number, and the amount is exactly right.', 'sqrip-swiss-qr-invoice'),
+                self::order_link_html($order), esc_html($received !== '' ? $received : '&mdash;'));
+
+        $body = '<p style="font-family:sans-serif;font-size:14px;">' . $intro . '</p>'
+            . self::contact_line($order)
+            . '<p style="font-family:sans-serif;font-size:14px;">&rarr; '
+            . sprintf(
+                /* translators: %s: order status */
+                esc_html__('The order is now on "%s". If this was not your customer\'s payment, open the order and reverse it.', 'sqrip-swiss-qr-invoice'),
+                esc_html(self::status_name($order)))
+            . '<br>&rarr; ' . self::check_order_link($order) . '</p>';
+
+        self::mail_admin($subject, $body);
+    }
+
+    /**
      * One e-mail for a batch payment whose total does not add up: lists every affected
      * order, states whether the batch is short or over, and that all are held.
      *
@@ -2164,15 +2326,7 @@ class Sqrip_Avis
             wp_send_json_error(array('message' => __('The order could not be found.', 'sqrip-swiss-qr-invoice')));
         }
 
-        self::add_order_note($order, __('Confirmed as paid by hand from the sqrip reconcile table.', 'sqrip-swiss-qr-invoice'));
-
-        $status_completed = sqrip_get_plugin_option('status_completed');
-
-        if ($status_completed) {
-            $order->update_status($status_completed, '');
-        } else {
-            $order->save();
-        }
+        self::mark_order_paid($order, __('Confirmed as paid by hand from the sqrip reconcile table.', 'sqrip-swiss-qr-invoice'));
 
         wp_send_json_success(array(
             /* translators: %s: order number */
