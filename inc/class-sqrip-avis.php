@@ -2447,7 +2447,17 @@ class Sqrip_Avis
      */
     private static function render_check(array $report)
     {
-        $orders = $report['orders'];
+        // Drop orders that are already paid — e.g. one just auto-released in this same run,
+        // or booked by hand meanwhile. The snapshot in $report was taken before booking, so
+        // without this a paid order would still show as "waiting" with the ✓/✗ actions.
+        $orders = array_values(array_filter(
+            $report['orders'],
+            static function ($entry) {
+                $order = wc_get_order($entry['order_id']);
+
+                return $order && !$order->is_paid();
+            }
+        ));
 
         ob_start();
         ?>
